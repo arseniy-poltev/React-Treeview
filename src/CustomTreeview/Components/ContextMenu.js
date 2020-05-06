@@ -18,18 +18,6 @@ export default class ContextMenu extends Component {
             mouseX: nextProps.positionX,
             mouseY: nextProps.positionY
         })
-        // if(nextProps.positionX !== state.mouseX && nextProps.positionY !== state.mouseY) {
-        //     return {
-        //         mouseX: nextProps.positionX,
-        //         mouseY: nextProps.positionY
-        //     } 
-        // }
-        // else {
-        //     return {
-        //         mouseX: null,
-        //         mouseY: null
-        //     }
-        // }
     }
     
 
