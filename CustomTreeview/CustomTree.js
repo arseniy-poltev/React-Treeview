@@ -47,14 +47,7 @@ export default class CustomTree extends Component {
     };
   }
   componentWillMount() {
-
     const initialTree = this.initTreeData();
-    // const initialTree = getTreeFromFlatData({
-    //   flatData: initialFlatData.data.map(node => ({ ...node, parentId: node.parentId !== undefined ? node.parentId : null })),
-    //   getKey: node => node.id,
-    //   getParentKey: node => node.parentId,
-    //   rootKey: null
-    // });
     
     this.setState({ initialTreeData: initialTree });
     this.setState({ treeData: initialTree });
@@ -68,7 +61,11 @@ export default class CustomTree extends Component {
     }
     const data = {};    
     const response = await axios.post(this.props.treeConfig.appUrl, data, {headers: headers});
-    return response.data;
+    if(response !== null) {
+      return response.data;
+    } else {
+      return null;
+    }
   }
 
   handleExportJson = async () => {
