@@ -4,6 +4,7 @@ import { DndProvider } from 'react-dnd';
 import FileExplorerTheme from 'react-sortable-tree-theme-file-explorer';
 import HTML5Backend from 'react-dnd-html5-backend';
 import TouchBackend from 'react-dnd-touch-backend';
+import axios from 'axios';
 import { SortableTreeWithoutDndContext as SortableTree, toggleExpandedForAll } from "react-sortable-tree";
 import { removeNodeAtPath, getNodeAtPath, addNodeUnderParent, changeNodeAtPath, getTreeFromFlatData } from './utils/tree-data-utils';
 import "react-sortable-tree/style.css";
@@ -69,6 +70,7 @@ export default class CustomTree extends Component {
       }
     });
 
+    const response = await axios.post(this.props.treeConfig.appUrl);
     return response;
   }
 

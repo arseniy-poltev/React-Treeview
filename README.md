@@ -8,6 +8,7 @@ npm i react-dnd
 npm i react-dnd-html5-backend
 npm i react-dnd-touch-backend
 npm i @material-ui/core
+npm i axios
 ```
 ##Installation and usage
 ```sh
