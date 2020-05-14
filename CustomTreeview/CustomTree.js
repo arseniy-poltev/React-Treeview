@@ -63,6 +63,7 @@ export default class CustomTree extends Component {
     treeSettings['maxDepth'] = this.state.maxDepth;
     treeSettings['showDisabled'] = this.state.showDisabled;
     treeSettings['caseSensitive'] = this.state.caseSensitive;
+    treeSettings['showOnlyMatches'] = this.state.showOnlyMatches;
 
     exportData['settings'] = treeSettings;
     exportData['data'] = treeData;
