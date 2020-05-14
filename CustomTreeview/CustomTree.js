@@ -10,8 +10,6 @@ import { removeNodeAtPath, getNodeAtPath, addNodeUnderParent, changeNodeAtPath, 
 import "react-sortable-tree/style.css";
 import ContextMenu from './Components/ContextMenu'
 import OptionPanel from './Components/OptionPanel'
-import treeInitData from "./Resource/treeData";
-import flatdata from "./Resource/flatData";
 import "./Resource/styles.css";
 
 
@@ -25,16 +23,16 @@ export default class CustomTree extends Component {
       searchToggleState: false,
       searchFocusIndex: 0,
       searchFoundCount: 0,
-      initialTreeData: null,
-      treeData: null,
+      initialTreeData: [],
+      treeData: [],
       maxDepth: this.props.treeConfig.settings.maxDepth,
       showDisabled: this.props.treeConfig.settings.showDisabled,
       caseSensitive: this.props.treeConfig.settings.caseSensitive,
       showOnlyMatches: this.props.treeConfig.settings.showOnlyMatches,
-      titleColor: this.props.treeConfig.settings.titleColor,
-      iconColor: this.props.treeConfig.settings.iconColor,
-      disabledColor: this.props.treeConfig.settings.disabledColor,
-      infoColor: this.props.treeConfig.settings.infoColor,
+      titleColor: this.props.treeConfig.titleColor,
+      iconColor: this.props.treeConfig.iconColor,
+      disabledColor: this.props.treeConfig.disabledColor,
+      infoColor: this.props.treeConfig.infoColor,
       nodeContextState: {
         contextItem: null,
         mouseX: null,
@@ -48,10 +46,9 @@ export default class CustomTree extends Component {
   }
   componentWillMount() {
     const initialTree = this.initTreeData();
-    
-    this.setState({ initialTreeData: initialTree });
-    this.setState({ treeData: initialTree });
-    this.refreshTreeData();
+    this.setState({ initialTreeData: initialTree,treeData: initialTree }, () => {
+      this.refreshTreeData();
+    });
   }
 
    initTreeData = async () => {
@@ -62,7 +59,7 @@ export default class CustomTree extends Component {
     const data = {};    
     const response = await axios.post(this.props.treeConfig.appUrl, data, {headers: headers});
     if(response !== null) {
-      return response.data;
+      return response.data.payload.data;
     } else {
       return null;
     }
