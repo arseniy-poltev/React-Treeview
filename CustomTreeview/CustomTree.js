@@ -16,7 +16,6 @@ import "./Resource/styles.css";
 
 const isTouchDevice = !!('ontouchstart' in window || navigator.maxTouchPoints);
 const dndBackend = isTouchDevice ? TouchBackend : HTML5Backend;
-const api_url = "https://sampleapi.com/initTreeData";
 export default class CustomTree extends Component {
   constructor(props) {
     super(props);
@@ -25,8 +24,8 @@ export default class CustomTree extends Component {
       searchToggleState: false,
       searchFocusIndex: 0,
       searchFoundCount: 0,
-      initialTreeData: initialTree,
-      treeData: initialTree,
+      initialTreeData: null,
+      treeData: null,
       maxDepth: this.props.treeConfig.settings.maxDepth,
       showDisabled: this.props.treeConfig.settings.showDisabled,
       caseSensitive: this.props.treeConfig.settings.caseSensitive,
@@ -62,7 +61,7 @@ export default class CustomTree extends Component {
   }
 
    initTreeData = async () => {
-    const response = await fetch(api_url, {
+    const response = await fetch(this.props.treeConfig.appUrl, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',

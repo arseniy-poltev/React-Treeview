@@ -27,6 +27,7 @@ const treeConfig = {
   showDisabled: true,
   caseSensitive: true,
   showOnlyMatches: false,
+  appUrl: "https://apiexample.com/"
 }
 
 
