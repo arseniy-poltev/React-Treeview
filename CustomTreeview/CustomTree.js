@@ -464,7 +464,7 @@ export default class CustomTree extends Component {
                     matches.length > 0 ? searchFocusIndex % matches.length : 0
                 })
               }}
-              isVirtualized={false}
+              // isVirtualized={false}
               // onlyExpandSearchedNodes={true}
               generateNodeProps={(rowInfo) => ({
                 onContextMenu: (event) => {
