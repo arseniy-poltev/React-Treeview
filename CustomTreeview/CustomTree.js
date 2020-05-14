@@ -17,13 +17,6 @@ import "./Resource/styles.css";
 const isTouchDevice = !!('ontouchstart' in window || navigator.maxTouchPoints);
 const dndBackend = isTouchDevice ? TouchBackend : HTML5Backend;
 
-const initialTree = getTreeFromFlatData({
-  flatData: flatdata.data.map(node => ({ ...node, parentId: node.parentId !== undefined ? node.parentId : null })),
-  getKey: node => node.id,
-  getParentKey: node => node.parentId,
-  rootKey: null
-});
-
 export default class CustomTree extends Component {
   constructor(props) {
     super(props);
@@ -34,10 +27,14 @@ export default class CustomTree extends Component {
       searchFoundCount: 0,
       initialTreeData: initialTree,
       treeData: initialTree,
-      maxDepth: flatdata.settings.maxDepth,
-      showDisabled: flatdata.settings.showDisabled,
-      caseSensitive: flatdata.settings.caseSensitive,
-      showOnlyMatches: flatdata.settings.showOnlyMatches,
+      maxDepth: this.props.treeConfig.settings.maxDepth,
+      showDisabled: this.props.treeConfig.settings.showDisabled,
+      caseSensitive: this.props.treeConfig.settings.caseSensitive,
+      showOnlyMatches: this.props.treeConfig.settings.showOnlyMatches,
+      titleColor: this.props.treeConfig.settings.titleColor,
+      iconColor: this.props.treeConfig.settings.iconColor,
+      disabledColor: this.props.treeConfig.settings.disabledColor,
+      infoColor: this.props.treeConfig.settings.infoColor,
       nodeContextState: {
         contextItem: null,
         mouseX: null,
@@ -50,16 +47,38 @@ export default class CustomTree extends Component {
     };
   }
   componentWillMount() {
+
+    const initialFlatData = this.initTreeData();
+    const initialTree = getTreeFromFlatData({
+      flatData: initialFlatData.data.map(node => ({ ...node, parentId: node.parentId !== undefined ? node.parentId : null })),
+      getKey: node => node.id,
+      getParentKey: node => node.parentId,
+      rootKey: null
+    });
+    
+    this.setState({ initialTreeData: initialTree });
+    this.setState({ treeData: initialTree });
     this.refreshTreeData();
-    this.setState({ initialTreeData: this.state.treeData });
+  }
+
+   initTreeData = async () => {
+    const response = await fetch('https://sampleapi.com/initTreeData', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      }
+    });
+
+    return response;
   }
 
   handleExportJson = async () => {
     const { treeData } = this.state;
     let treeSettings = {}, exportData = {};
-    treeSettings['titleColor'] = treeInitData.settings.titleColor;
-    treeSettings['iconColor'] = treeInitData.settings.iconColor;
-    treeSettings['infoColor'] = treeInitData.settings.infoColor;
+    treeSettings['titleColor'] = this.state.titleColor;
+    treeSettings['iconColor'] = this.state.iconColor;
+    treeSettings['infoColor'] = this.state.infoColor;
     treeSettings['maxDepth'] = this.state.maxDepth;
     treeSettings['showDisabled'] = this.state.showDisabled;
     treeSettings['caseSensitive'] = this.state.caseSensitive;
@@ -196,7 +215,7 @@ export default class CustomTree extends Component {
       treeData: removeNodeAtPath({
         treeData: this.state.treeData,
         path: path,
-        getNodeKey: ({treeIndex}) => treeIndex,
+        getNodeKey: ({ treeIndex }) => treeIndex,
         ignoreCollapsed: true,
       }),
       nodeContextState: {
@@ -227,7 +246,7 @@ export default class CustomTree extends Component {
     if (this.state.nodeContextState.modalState === 'edit') {
       let originalRowInfo = this.state.nodeContextState.contextItem;
       let newRowInfo = this.state.nodeItem;
-      
+
       // Call api to update node
       // Request: newRowInfo, Response: flatTreeData
       let newTree = changeNodeAtPath({
@@ -255,7 +274,7 @@ export default class CustomTree extends Component {
         parentKey = null;
       }
 
-     
+
       let newTree = addNodeUnderParent({
         treeData: this.state.treeData,
         newNode: this.state.nodeItem,
@@ -264,7 +283,7 @@ export default class CustomTree extends Component {
         getNodeKey: ({ treeIndex }) => treeIndex
       });
 
-       // Call api to add new node
+      // Call api to add new node
       // Request: newTree.treeData, Response: flatTreeData to update initialTreeData
       this.setState({ treeData: newTree.treeData })
     }
@@ -389,7 +408,7 @@ export default class CustomTree extends Component {
   }
 
   // update server with new node data when on drag event trigger
-  handleOnMobeNode = ({node, nextPath, nextParentNode, treeData}) => {
+  handleOnMobeNode = ({ node, nextPath, nextParentNode, treeData }) => {
     node.parentId = nextParentNode === null ? null : nextParentNode.id;
 
     // Call api to update db
@@ -410,7 +429,7 @@ export default class CustomTree extends Component {
 
     return (
       <DndProvider backend={dndBackend}>
-        <div className="tree-wrapper"  onKeyUp={this.handleKeyEvent} tabIndex="0">
+        <div className="tree-wrapper" onKeyUp={this.handleKeyEvent} tabIndex="0">
           <OptionPanel
             handleSearch={this.handleSearchOnChange}
             searchString={searchString}
@@ -465,15 +484,15 @@ export default class CustomTree extends Component {
                 lowerSiblingCounts: [],
                 title: (
                   <div className='justify-content-between' style={{ width: '100%' }} >
-                    <i className={`fa ${rowInfo.node.icon} fa-md mr-2`} style={{ color: rowInfo.node.disabled ? flatdata.settings.disabledColor : flatdata.settings.iconColor }}></i>
-                    <span style={{ color: rowInfo.node.disabled ? flatdata.settings.disabledColor : flatdata.settings.titleColor }}>
+                    <i className={`fa ${rowInfo.node.icon} fa-md mr-2`} style={{ color: rowInfo.node.disabled ? this.state.disabledColor : this.state.iconColor }}></i>
+                    <span style={{ color: rowInfo.node.disabled ? this.state.disabledColor : this.state.titleColor }}>
                       {rowInfo.node.title}
                     </span>
                   </div>
                 ),
                 buttons: [
                   <>
-                    <span style={{ marginRight: '10px', color: rowInfo.node.disabled ? flatdata.settings.disabledColor : flatdata.settings.infoColor }}>
+                    <span style={{ marginRight: '10px', color: rowInfo.node.disabled ? this.state.disabledColor : this.state.infoColor }}>
                       {rowInfo.node.info}
                     </span>
                   </>
