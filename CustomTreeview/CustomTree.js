@@ -48,13 +48,13 @@ export default class CustomTree extends Component {
   }
   componentWillMount() {
 
-    const initialFlatData = this.initTreeData();
-    const initialTree = getTreeFromFlatData({
-      flatData: initialFlatData.data.map(node => ({ ...node, parentId: node.parentId !== undefined ? node.parentId : null })),
-      getKey: node => node.id,
-      getParentKey: node => node.parentId,
-      rootKey: null
-    });
+    const initialTree = this.initTreeData();
+    // const initialTree = getTreeFromFlatData({
+    //   flatData: initialFlatData.data.map(node => ({ ...node, parentId: node.parentId !== undefined ? node.parentId : null })),
+    //   getKey: node => node.id,
+    //   getParentKey: node => node.parentId,
+    //   rootKey: null
+    // });
     
     this.setState({ initialTreeData: initialTree });
     this.setState({ treeData: initialTree });
