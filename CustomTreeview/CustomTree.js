@@ -62,15 +62,12 @@ export default class CustomTree extends Component {
   }
 
    initTreeData = async () => {
-    const response = await fetch(this.props.treeConfig.appUrl, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      }
-    });
 
-    const response = await axios.post(this.props.treeConfig.appUrl);
+    const headers = {
+      'Content-Type': 'application/json',
+    }
+    const data = {};    
+    const response = await axios.post(this.props.treeConfig.appUrl, data, {headers: headers});
     return response;
   }
 
