@@ -6,7 +6,7 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import TouchBackend from 'react-dnd-touch-backend';
 import axios from 'axios';
 import { SortableTreeWithoutDndContext as SortableTree, toggleExpandedForAll } from "react-sortable-tree";
-import { removeNodeAtPath, getNodeAtPath, addNodeUnderParent, changeNodeAtPath, getTreeFromFlatData } from './utils/tree-data-utils';
+import { removeNodeAtPath, getNodeAtPath, addNodeUnderParent, changeNodeAtPath } from './utils/tree-data-utils';
 import "react-sortable-tree/style.css";
 import ContextMenu from './Components/ContextMenu'
 import OptionPanel from './Components/OptionPanel'
@@ -23,8 +23,8 @@ export default class CustomTree extends Component {
       searchToggleState: false,
       searchFocusIndex: 0,
       searchFoundCount: 0,
-      initialTreeData: [],
-      treeData: [],
+      initialTreeData: null,
+      treeData: null,
       maxDepth: this.props.treeConfig.settings.maxDepth,
       showDisabled: this.props.treeConfig.settings.showDisabled,
       caseSensitive: this.props.treeConfig.settings.caseSensitive,
@@ -45,24 +45,17 @@ export default class CustomTree extends Component {
     };
   }
   componentWillMount() {
-    const initialTree = this.initTreeData();
-    this.setState({ initialTreeData: initialTree,treeData: initialTree }, () => {
-      this.refreshTreeData();
-    });
-  }
-
-   initTreeData = async () => {
-
     const headers = {
       'Content-Type': 'application/json',
     }
-    const data = {};    
-    const response = await axios.post(this.props.treeConfig.appUrl, data, {headers: headers});
-    if(response !== null) {
-      return response.data.payload.data;
-    } else {
-      return null;
-    }
+    const data = {};   
+
+    axios.get(this.props.treeConfig.appUrl, data, {headers: headers})
+    .then(response => {
+      this.setState({ initialTreeData: response.data.payload.data,treeData: response.data.payload.data }, () => {
+        this.refreshTreeData();
+      });
+    });
   }
 
   handleExportJson = async () => {
@@ -114,21 +107,23 @@ export default class CustomTree extends Component {
   }
 
   sortFilterNodesAndChildren = (nodes) => {
-    nodes.sort((a, b) => a.title < b.title ? -1 : a.title > b.title ? 1 : 0);
-    nodes = nodes.filter(item => {
-      if (!this.state.showDisabled && item.disabled === true) {
-        return false;
-      } else {
-        return true;
-      }
-    })
-
-    nodes.map(item => {
-      if (item.children !== undefined && item.children !== null) {
-        item.children = this.sortFilterNodesAndChildren(item.children);
-      }
-      return item;
-    });
+    if(nodes != null) {
+      nodes.sort((a, b) => a.title < b.title ? -1 : a.title > b.title ? 1 : 0);
+      nodes = nodes.filter(item => {
+        if (!this.state.showDisabled && item.disabled === true) {
+          return false;
+        } else {
+          return true;
+        }
+      })
+  
+      nodes.map(item => {
+        if (item.children !== undefined && item.children !== null) {
+          item.children = this.sortFilterNodesAndChildren(item.children);
+        }
+        return item;
+      });
+    }
 
     return nodes;
   }
@@ -433,88 +428,89 @@ export default class CustomTree extends Component {
             handleExportJson={this.handleExportJson}
             showOnlyMatches={showOnlyMatches}
           />
-          <div className="tree-content">
-            <SortableTree
-              theme={FileExplorerTheme}
-              treeData={treeData}
-              onChange={this.handleTreeOnChange}
-              onMoveNode={this.handleOnMobeNode}
-              maxDepth={this.state.maxDepth}
-              searchMethod={this.customSearchMethod}
-              searchQuery={searchString}
-              searchFocusOffset={searchFocusIndex}
-              canDrag={this.checkCanDrag}
-              canDrop={({ nextParent }) => !nextParent || !nextParent.noChildren}
-              searchFinishCallback={(matches) => {
-                if (this.state.searchString === '' || this.state.searchString === null) {
-                } else {
-                  if (this.state.showOnlyMatches) {
-                    this.getSearchPath(matches);
-                  }
-                }
-                this.setState({
-                  searchFoundCount: matches.length,
-                  searchFocusIndex:
-                    matches.length > 0 ? searchFocusIndex % matches.length : 0
-                })
-              }}
-              // isVirtualized={false}
-              // onlyExpandSearchedNodes={true}
-              generateNodeProps={(rowInfo) => ({
-                onContextMenu: (event) => {
-                  console.log('rowInfo', rowInfo)
-                  event.preventDefault();
-                  this.setState({
-                    nodeContextState: {
-                      mouseX: event.clientX - 2,
-                      mouseY: event.clientY - 4,
-                      contextItem: rowInfo
-                    }
-                  });
-                },
-                listIndex: 0,
-                lowerSiblingCounts: [],
-                title: (
-                  <div className='justify-content-between' style={{ width: '100%' }} >
-                    <i className={`fa ${rowInfo.node.icon} fa-md mr-2`} style={{ color: rowInfo.node.disabled ? this.state.disabledColor : this.state.iconColor }}></i>
-                    <span style={{ color: rowInfo.node.disabled ? this.state.disabledColor : this.state.titleColor }}>
-                      {rowInfo.node.title}
-                    </span>
-                  </div>
-                ),
-                buttons: [
-                  <>
-                    <span style={{ marginRight: '10px', color: rowInfo.node.disabled ? this.state.disabledColor : this.state.infoColor }}>
-                      {rowInfo.node.info}
-                    </span>
-                  </>
-                ]
-              })}
-            />
-            <ContextMenu
-              nodeContextState={this.state.nodeContextState}
-              editNode={this.editNode}
-              addNode={this.addNode}
-              removeNode={this.removeNode}
-              nodeItem={this.state.nodeContextState.contextItem}
-              clearContextState={this.clearContextState}
-            />
-            <Modal isOpen={this.state.nodeContextState.nodeModalToggle} toggle={this.toggleModal}
-              className={'modal-sm modal-primary'}>
-              <ModalHeader toggle={this.toggleModal}>{this.state.nodeContextState.modalState === 'add' ? "Add Node" : "Edit Node"}</ModalHeader>
-              <ModalBody>
-                <FormGroup>
-                  <Label htmlFor="title">Title</Label>
-                  <Input type="text" name="title" onKeyUp={e => this.handleModalFormChange(e)} className="form-control-success" id="title" defaultValue={this.state.nodeItem !== null ? this.state.nodeItem.title : null} />
-                </FormGroup>
-              </ModalBody>
-              <ModalFooter>
-                <Button color="primary" onClick={this.saveNode}>Save</Button>
-                <Button color="secondary" onClick={this.toggleModal}>Cancel</Button>
-              </ModalFooter>
-            </Modal>
-          </div>
-        </div>
+          {this.state.initialTreeData !== null &&
+               <div className="tree-content" >
+               <SortableTree
+                 theme={FileExplorerTheme}
+                 treeData={treeData}
+                 onChange={this.handleTreeOnChange}
+                 onMoveNode={this.handleOnMobeNode}
+                 maxDepth={this.state.maxDepth}
+                 searchMethod={this.customSearchMethod}
+                 searchQuery={searchString}
+                 searchFocusOffset={searchFocusIndex}
+                 canDrag={this.checkCanDrag}
+                 canDrop={({ nextParent }) => !nextParent || !nextParent.noChildren}
+                 searchFinishCallback={(matches) => {
+                   if (this.state.searchString === '' || this.state.searchString === null) {
+                   } else {
+                     if (this.state.showOnlyMatches) {
+                       this.getSearchPath(matches);
+                     }
+                   }
+                   this.setState({
+                     searchFoundCount: matches.length,
+                     searchFocusIndex:
+                       matches.length > 0 ? searchFocusIndex % matches.length : 0
+                   })
+                 }}
+                 // isVirtualized={false}
+                 // onlyExpandSearchedNodes={true}
+                 generateNodeProps={(rowInfo) => ({
+                   onContextMenu: (event) => {
+                     event.preventDefault();
+                     this.setState({
+                       nodeContextState: {
+                         mouseX: event.clientX - 2,
+                         mouseY: event.clientY - 4,
+                         contextItem: rowInfo
+                       }
+                     });
+                   },
+                   listIndex: 0,
+                   lowerSiblingCounts: [],
+                   title: (
+                     <div className='justify-content-between' style={{ width: '100%' }} >
+                       <i className={`fa ${rowInfo.node.icon} fa-md mr-2`} style={{ color: rowInfo.node.disabled ? this.state.disabledColor : this.state.iconColor }}></i>
+                       <span style={{ color: rowInfo.node.disabled ? this.state.disabledColor : this.state.titleColor }}>
+                         {rowInfo.node.title}
+                       </span>
+                     </div>
+                   ),
+                   buttons: [
+                     <>
+                       <span style={{ marginRight: '10px', color: rowInfo.node.disabled ? this.state.disabledColor : this.state.infoColor }}>
+                         {rowInfo.node.info}
+                       </span>
+                     </>
+                   ]
+                 })}
+               />
+               <ContextMenu
+                 nodeContextState={this.state.nodeContextState}
+                 editNode={this.editNode}
+                 addNode={this.addNode}
+                 removeNode={this.removeNode}
+                 nodeItem={this.state.nodeContextState.contextItem}
+                 clearContextState={this.clearContextState}
+               />
+               <Modal isOpen={this.state.nodeContextState.nodeModalToggle} toggle={this.toggleModal}
+                 className={'modal-sm modal-primary'}>
+                 <ModalHeader toggle={this.toggleModal}>{this.state.nodeContextState.modalState === 'add' ? "Add Node" : "Edit Node"}</ModalHeader>
+                 <ModalBody>
+                   <FormGroup>
+                     <Label htmlFor="title">Title</Label>
+                     <Input type="text" name="title" onKeyUp={e => this.handleModalFormChange(e)} className="form-control-success" id="title" defaultValue={this.state.nodeItem !== null ? this.state.nodeItem.title : null} />
+                   </FormGroup>
+                 </ModalBody>
+                 <ModalFooter>
+                   <Button color="primary" onClick={this.saveNode}>Save</Button>
+                   <Button color="secondary" onClick={this.toggleModal}>Cancel</Button>
+                 </ModalFooter>
+               </Modal>
+             </div>
+          }
+       </div>
       </DndProvider>
     );
   }
