@@ -1,0 +1,82 @@
+body,
+html,
+#root,
+.tree-wrapper {
+  min-height: 300px;
+}
+.wrapper {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.bar-wrapper {
+  margin-top: 5px;
+  margin-left: 5px;
+  margin-bottom: 5px;
+  padding: 10px;
+}
+
+.tree-wrapper {
+  /* height: calc(100% - 25px); */
+  height: 100%;
+}
+
+.previous {
+  margin-left: 10px;
+}
+
+.next,
+.collapse {
+  margin-right: 10px;
+  margin-left: 5px;
+}
+
+.custom-root {
+  background-color: #fff;
+}
+
+.custom-divider {
+  background-color: #000;
+}
+
+.custom-selected {
+  background-color: #f00;
+}
+
+.tree-wrapper {
+  padding: 10px;
+ 
+  background: #CCC !important;
+}
+
+.tree-content {
+  height: 400px;
+  max-width: 300px;
+  padding-top: 10px;
+}
+
+.option-bar {
+  /* background: #209FFB !important; */
+  padding: 2px 10px 2px 10px;
+  border: 1px solid white;
+  cursor: pointer;
+  /* margin-bottom: 10px; */
+}
+
+.dropdown-menu {
+  width: 100%;
+}
+
+.option-content {
+  margin-bottom: 0 !important;
+}
+
+.form-check-input {
+  margin-top: 10px;
+}
