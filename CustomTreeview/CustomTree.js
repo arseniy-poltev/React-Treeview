@@ -68,7 +68,7 @@ export default class CustomTree extends Component {
     }
     const data = {};    
     const response = await axios.post(this.props.treeConfig.appUrl, data, {headers: headers});
-    return response;
+    return response.data;
   }
 
   handleExportJson = async () => {
