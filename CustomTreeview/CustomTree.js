@@ -5,8 +5,8 @@ import FileExplorerTheme from 'react-sortable-tree-theme-file-explorer';
 import HTML5Backend from 'react-dnd-html5-backend';
 import TouchBackend from 'react-dnd-touch-backend';
 import axios from 'axios';
-import { SortableTreeWithoutDndContext as SortableTree, toggleExpandedForAll } from "react-sortable-tree";
-import { removeNodeAtPath, getNodeAtPath, addNodeUnderParent, changeNodeAtPath } from './utils/tree-data-utils';
+import {SortableTreeWithoutDndContext as SortableTree} from "./src/react-sortable-tree";
+import { removeNodeAtPath, getNodeAtPath, addNodeUnderParent, changeNodeAtPath, toggleExpandedForAll } from './utils/tree-data-utils';
 import "react-sortable-tree/style.css";
 import ContextMenu from './Components/ContextMenu'
 import OptionPanel from './Components/OptionPanel'
@@ -50,9 +50,9 @@ export default class CustomTree extends Component {
     }
     const data = {};   
 
-    axios.get(this.props.treeConfig.appUrl, data, {headers: headers})
+    axios.post(this.props.treeConfig.appUrl, data, {headers: headers})
     .then(response => {
-      this.setState({ initialTreeData: response.data.payload.data,treeData: response.data.payload.data }, () => {
+      this.setState({ initialTreeData: response.data.payload.data,treeData: response.payload.data.data }, () => {
         this.refreshTreeData();
       });
     });
@@ -403,6 +403,50 @@ export default class CustomTree extends Component {
     // Request param: node, response: update state
   }
 
+  handleSearchFinishCallback = (matches) => {
+    if (this.state.searchString === '' || this.state.searchString === null) {
+    } else {
+      if (this.state.showOnlyMatches) {
+        this.getSearchPath(matches);
+      }
+    }
+    this.setState({
+      searchFoundCount: matches.length,
+      searchFocusIndex:
+        matches.length > 0 ? this.state.searchFocusIndex % matches.length : 0
+    })
+  }
+
+  generateCustomNodeProps = (rowInfo) => ({
+    onContextMenu: (event) => {
+      event.preventDefault();
+      this.setState({
+        nodeContextState: {
+          mouseX: event.clientX - 2,
+          mouseY: event.clientY - 4,
+          contextItem: rowInfo
+        }
+      });
+    },
+    listIndex: 0,
+    lowerSiblingCounts: [],
+    title: (
+      <div className='justify-content-between' style={{ width: '100%' }} >
+        <i className={`fa ${rowInfo.node.icon} fa-md mr-2`} style={{ color: rowInfo.node.disabled ? this.state.disabledColor : this.state.iconColor }}></i>
+        <span style={{ color: rowInfo.node.disabled ? this.state.disabledColor : this.state.titleColor }}>
+          {rowInfo.node.title}
+        </span>
+      </div>
+    ),
+    buttons: [
+      <>
+        <span style={{ marginRight: '10px', color: rowInfo.node.disabled ? this.state.disabledColor : this.state.infoColor }}>
+          {rowInfo.node.info}
+        </span>
+      </>
+    ]
+  })
+
 
   render() {
     const {
@@ -441,50 +485,8 @@ export default class CustomTree extends Component {
                  searchFocusOffset={searchFocusIndex}
                  canDrag={this.checkCanDrag}
                  canDrop={({ nextParent }) => !nextParent || !nextParent.noChildren}
-                 searchFinishCallback={(matches) => {
-                   if (this.state.searchString === '' || this.state.searchString === null) {
-                   } else {
-                     if (this.state.showOnlyMatches) {
-                       this.getSearchPath(matches);
-                     }
-                   }
-                   this.setState({
-                     searchFoundCount: matches.length,
-                     searchFocusIndex:
-                       matches.length > 0 ? searchFocusIndex % matches.length : 0
-                   })
-                 }}
-                 // isVirtualized={false}
-                 // onlyExpandSearchedNodes={true}
-                 generateNodeProps={(rowInfo) => ({
-                   onContextMenu: (event) => {
-                     event.preventDefault();
-                     this.setState({
-                       nodeContextState: {
-                         mouseX: event.clientX - 2,
-                         mouseY: event.clientY - 4,
-                         contextItem: rowInfo
-                       }
-                     });
-                   },
-                   listIndex: 0,
-                   lowerSiblingCounts: [],
-                   title: (
-                     <div className='justify-content-between' style={{ width: '100%' }} >
-                       <i className={`fa ${rowInfo.node.icon} fa-md mr-2`} style={{ color: rowInfo.node.disabled ? this.state.disabledColor : this.state.iconColor }}></i>
-                       <span style={{ color: rowInfo.node.disabled ? this.state.disabledColor : this.state.titleColor }}>
-                         {rowInfo.node.title}
-                       </span>
-                     </div>
-                   ),
-                   buttons: [
-                     <>
-                       <span style={{ marginRight: '10px', color: rowInfo.node.disabled ? this.state.disabledColor : this.state.infoColor }}>
-                         {rowInfo.node.info}
-                       </span>
-                     </>
-                   ]
-                 })}
+                 searchFinishCallback={this.handleSearchFinishCallback}
+                 generateNodeProps={this.generateCustomNodeProps}
                />
                <ContextMenu
                  nodeContextState={this.state.nodeContextState}
