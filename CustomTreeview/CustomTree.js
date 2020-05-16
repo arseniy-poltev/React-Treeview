@@ -1,16 +1,17 @@
 import React, { Component } from "react";
-import { Input, FormGroup, Button, Label, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { CInput, CFormGroup, CButton, CLabel, CModal, CModalHeader, CModalBody, CModalFooter, CCard, CCardBody } from '@coreui/react';
 import { DndProvider } from 'react-dnd';
 import FileExplorerTheme from 'react-sortable-tree-theme-file-explorer';
 import HTML5Backend from 'react-dnd-html5-backend';
 import TouchBackend from 'react-dnd-touch-backend';
 import axios from 'axios';
-import {SortableTreeWithoutDndContext as SortableTree} from "./src/react-sortable-tree";
+import { SortableTreeWithoutDndContext as SortableTree } from "./src/react-sortable-tree";
 import { removeNodeAtPath, getNodeAtPath, addNodeUnderParent, changeNodeAtPath, toggleExpandedForAll } from './utils/tree-data-utils';
 import "react-sortable-tree/style.css";
 import ContextMenu from './Components/ContextMenu'
 import OptionPanel from './Components/OptionPanel'
 import "./Resource/styles.css";
+import 'font-awesome/css/font-awesome.min.css';
 
 
 const isTouchDevice = !!('ontouchstart' in window || navigator.maxTouchPoints);
@@ -25,6 +26,7 @@ export default class CustomTree extends Component {
       searchFoundCount: 0,
       initialTreeData: null,
       treeData: null,
+      matchedTreedata: null,
       maxDepth: this.props.treeConfig.settings.maxDepth,
       showDisabled: this.props.treeConfig.settings.showDisabled,
       caseSensitive: this.props.treeConfig.settings.caseSensitive,
@@ -44,18 +46,18 @@ export default class CustomTree extends Component {
       expandCollapseOption: false,
     };
   }
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     const headers = {
       'Content-Type': 'application/json',
     }
-    const data = {};   
+    const data = {};
 
-    axios.post(this.props.treeConfig.appUrl, data, {headers: headers})
-    .then(response => {
-      this.setState({ initialTreeData: response.data.payload.data,treeData: response.payload.data.data }, () => {
-        this.refreshTreeData();
+    axios.post(this.props.treeConfig.appUrl, data, { headers: headers })
+      .then(response => {
+        this.setState({ initialTreeData: response.data.data, treeData: response.data.data }, () => {
+          this.refreshTreeData();
+        });
       });
-    });
   }
 
   handleExportJson = async () => {
@@ -93,21 +95,32 @@ export default class CustomTree extends Component {
     if (e.target.name === 'showOnlyMatches' && e.target.checked === true && this.state.searchString !== "") {
       this.setState({
         initialTreeData: this.state.treeData,
-        searchString: ""
-      })
+        treeData: this.state.matchedTreedata
+      });
+    } else if (e.target.name === "showDisabled" && this.state.showOnlyMatches === false) {
+      this.setState({ treeData: this.state.initialTreeData });
+
+    } else if (e.target.name === "showDisabled" && this.state.showOnlyMatches === true) {
+
     } else {
       this.setState({ treeData: this.state.initialTreeData })
     }
 
+    if (e.target.name === 'caseSensitive') {
+      this.setState({ searchString: '' })
+    }
+    // this.setState({ treeData: this.state.initialTreeData })
+
     let checkState = {};
     checkState[e.target.name] = e.target.checked;
+
     this.setState(checkState, () => {
       this.refreshTreeData();
     });
   }
 
   sortFilterNodesAndChildren = (nodes) => {
-    if(nodes != null) {
+    if (nodes != null) {
       nodes.sort((a, b) => a.title < b.title ? -1 : a.title > b.title ? 1 : 0);
       nodes = nodes.filter(item => {
         if (!this.state.showDisabled && item.disabled === true) {
@@ -116,7 +129,7 @@ export default class CustomTree extends Component {
           return true;
         }
       })
-  
+
       nodes.map(item => {
         if (item.children !== undefined && item.children !== null) {
           item.children = this.sortFilterNodesAndChildren(item.children);
@@ -170,11 +183,44 @@ export default class CustomTree extends Component {
       return item;
     })
     matchFamilies = Array.from(new Set(matchFamilies.map(JSON.stringify))).map(JSON.parse);
-    this.handleTreeOnChange(matchFamilies)
+    this.setState({ matchedTreedata: matchFamilies });
+
+    if (this.state.showOnlyMatches) {
+      this.handleTreeOnChange(matchFamilies)
+    }
+  }
+  
+  removeNodesWithoutMatching = (node, path) => {
+    let parent = node;
+
+    let parentPath = path.slice(0, -1);
+    if (parentPath.length > 0) {
+
+      let tmpNode = getNodeAtPath({
+        treeData: this.state.treeData,
+        path: parentPath,
+        getNodeKey: ({ treeIndex }) => treeIndex,
+      });
+
+      console.log("tmpnode", tmpNode)
+      let nodeObject = {};
+      if (tmpNode !== null && tmpNode.node !== undefined) {
+        nodeObject = tmpNode.node;
+        nodeObject.children = [];
+        nodeObject.children.push(node);
+      }
+
+      parent = this.removeNodesWithoutMatching(nodeObject, parentPath)
+
+      console.log("nodeoojbect", parent)
+
+    };
+
+    return parent;
   }
 
   handleTreeOnChange = treeData => {
-    this.sortFilterNodesAndChildren(treeData)
+    this.sortFilterNodesAndChildren(treeData);
     this.setState({ treeData });
   };
 
@@ -406,9 +452,10 @@ export default class CustomTree extends Component {
   handleSearchFinishCallback = (matches) => {
     if (this.state.searchString === '' || this.state.searchString === null) {
     } else {
-      if (this.state.showOnlyMatches) {
-        this.getSearchPath(matches);
-      }
+      this.getSearchPath(matches);
+
+      // if (this.state.showOnlyMatches) {
+      // }
     }
     this.setState({
       searchFoundCount: matches.length,
@@ -459,8 +506,8 @@ export default class CustomTree extends Component {
     } = this.state;
 
     return (
-      <DndProvider backend={dndBackend}>
-        <div className="tree-wrapper" onKeyUp={this.handleKeyEvent} tabIndex="0">
+      <CCard custom accentColor="primary" headerSlot="Card outline primary" className="text-white" borderColor="primary">
+        <CCardBody onKeyUp={this.handleKeyEvent} tabIndex="0">
           <OptionPanel
             handleSearch={this.handleSearchOnChange}
             searchString={searchString}
@@ -473,47 +520,49 @@ export default class CustomTree extends Component {
             showOnlyMatches={showOnlyMatches}
           />
           {this.state.initialTreeData !== null &&
-               <div className="tree-content" >
-               <SortableTree
-                 theme={FileExplorerTheme}
-                 treeData={treeData}
-                 onChange={this.handleTreeOnChange}
-                 onMoveNode={this.handleOnMobeNode}
-                 maxDepth={this.state.maxDepth}
-                 searchMethod={this.customSearchMethod}
-                 searchQuery={searchString}
-                 searchFocusOffset={searchFocusIndex}
-                 canDrag={this.checkCanDrag}
-                 canDrop={({ nextParent }) => !nextParent || !nextParent.noChildren}
-                 searchFinishCallback={this.handleSearchFinishCallback}
-                 generateNodeProps={this.generateCustomNodeProps}
-               />
-               <ContextMenu
-                 nodeContextState={this.state.nodeContextState}
-                 editNode={this.editNode}
-                 addNode={this.addNode}
-                 removeNode={this.removeNode}
-                 nodeItem={this.state.nodeContextState.contextItem}
-                 clearContextState={this.clearContextState}
-               />
-               <Modal isOpen={this.state.nodeContextState.nodeModalToggle} toggle={this.toggleModal}
-                 className={'modal-sm modal-primary'}>
-                 <ModalHeader toggle={this.toggleModal}>{this.state.nodeContextState.modalState === 'add' ? "Add Node" : "Edit Node"}</ModalHeader>
-                 <ModalBody>
-                   <FormGroup>
-                     <Label htmlFor="title">Title</Label>
-                     <Input type="text" name="title" onKeyUp={e => this.handleModalFormChange(e)} className="form-control-success" id="title" defaultValue={this.state.nodeItem !== null ? this.state.nodeItem.title : null} />
-                   </FormGroup>
-                 </ModalBody>
-                 <ModalFooter>
-                   <Button color="primary" onClick={this.saveNode}>Save</Button>
-                   <Button color="secondary" onClick={this.toggleModal}>Cancel</Button>
-                 </ModalFooter>
-               </Modal>
-             </div>
+            <div className="tree-content text-white" >
+              <DndProvider backend={dndBackend}>
+                <SortableTree
+                  theme={FileExplorerTheme}
+                  treeData={treeData}
+                  onChange={this.handleTreeOnChange}
+                  onMoveNode={this.handleOnMobeNode}
+                  maxDepth={this.state.maxDepth}
+                  searchMethod={this.customSearchMethod}
+                  searchQuery={searchString}
+                  searchFocusOffset={searchFocusIndex}
+                  canDrag={this.checkCanDrag}
+                  canDrop={({ nextParent }) => !nextParent || !nextParent.noChildren}
+                  searchFinishCallback={this.handleSearchFinishCallback}
+                  generateNodeProps={this.generateCustomNodeProps}
+                />
+                <ContextMenu
+                  nodeContextState={this.state.nodeContextState}
+                  editNode={this.editNode}
+                  addNode={this.addNode}
+                  removeNode={this.removeNode}
+                  nodeItem={this.state.nodeContextState.contextItem}
+                  clearContextState={this.clearContextState}
+                />
+                <CModal show={this.state.nodeContextState.nodeModalToggle} toggle={this.toggleModal}
+                  className={'modal-sm modal-primary'}>
+                  <CModalHeader toggle={this.toggleModal}>{this.state.nodeContextState.modalState === 'add' ? "Add Node" : "Edit Node"}</CModalHeader>
+                  <CModalBody>
+                    <CFormGroup>
+                      <CLabel htmlFor="title">Title</CLabel>
+                      <CInput type="text" name="title" onKeyUp={e => this.handleModalFormChange(e)} className="form-control-success" id="title" defaultValue={this.state.nodeItem !== null ? this.state.nodeItem.title : null} />
+                    </CFormGroup>
+                  </CModalBody>
+                  <CModalFooter>
+                    <CButton color="primary" onClick={this.saveNode}>Save</CButton>
+                    <CButton color="secondary" onClick={this.toggleModal}>Cancel</CButton>
+                  </CModalFooter>
+                </CModal>
+              </DndProvider>
+            </div>
           }
-       </div>
-      </DndProvider>
+        </CCardBody>
+      </CCard>
     );
   }
 }

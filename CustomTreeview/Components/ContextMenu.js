@@ -14,7 +14,7 @@ export default class ContextMenu extends Component {
         this.handleClose = this.handleClose.bind(this)
     }
 
-    componentWillReceiveProps(nextProps, state) {
+    UNSAFE_componentWillReceiveProps(nextProps, state) {
         this.setState({
             mouseX: nextProps.nodeContextState.mouseX,
             mouseY: nextProps.nodeContextState.mouseY,
