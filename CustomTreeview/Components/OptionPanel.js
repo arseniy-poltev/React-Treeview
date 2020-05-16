@@ -2,7 +2,18 @@ import React, { Component } from 'react';
 import { CDropdown, CDropdownToggle, CDropdownMenu, CCard, CCardBody, CRow, CCol, CLabel, CInput, CButton, CSwitch } from '@coreui/react';
 import { freeSet } from '@coreui/icons';
 import { CIcon } from '@coreui/icons-react';
+import Draggable from 'react-draggable';
 
+const styles = {
+    optionBar: {
+        cursor: 'pointer',
+        width: '100%',
+    },
+    dropdownMenu: {
+        width: '100%',
+        padding: 0
+    }
+}
 export default class OptionPanel extends Component {
     constructor(props) {
         super(props);
@@ -40,32 +51,37 @@ export default class OptionPanel extends Component {
     }
 
     bindSearch = (e) => {
-        this.setState({searchString: e.target.value});
+        this.setState({ searchString: e.target.value });
         this.props.handleSearch(e);
     }
 
     render() {
         return (
-            <>
-                <CDropdown  custom  show={this.state.optionPanelState} toggle={() => { this.toggleOption() }} style={{width: '100%'}} className="justify-content-space-between">
-                <CButton color="primary" className="btn-brand btn-sm" style={{cursor: "move"}}><CIcon name="cil-move"/></CButton> 
+            <Draggable
+                handle=".handle"
+                position={null}
+                scale={1}
+            >
+                <CDropdown custom show={this.state.optionPanelState} toggle={() => { this.toggleOption() }} style={{ width: '100%', zIndex: 2 }} className="justify-content-space-between">
+                    <CButton color="primary" className="btn-brand btn-sm handle" style={{ cursor: "move" }}><CIcon name="cil-move" /></CButton>
                     <CDropdownToggle
                         onClick={() => { this.toggleOption() }}
                         aria-expanded={this.state.optionPanelState}
                         className="option-bar justify-content-space-between text-center"
                         color="primary"
-                    >Option 
+                        style={styles.optionBar}
+                    >Option
                         {"  "}
                     </CDropdownToggle>
-                    <CDropdownMenu>
-                        <CCard  custom color="primary" className="text-white" style={{marginBottom: 0}}>
+                    <CDropdownMenu style={styles.dropdownMenu}>
+                        <CCard custom color="primary" className="text-white" style={{ marginBottom: 0 }}>
                             <CCardBody>
                                 <CRow>
                                     <CCol xs="6" sm="6" md="6">
                                         <CLabel size="sm" className="pull-left">Search: </CLabel>
                                     </CCol>
                                     <CCol xs="6" sm="6" md="6">
-                                        <CInput type="text" bsSize="sm" value={this.state.searchString ||""} onChange={this.bindSearch} />
+                                        <CInput type="text" bsSize="sm" value={this.state.searchString || ""} onChange={this.bindSearch} />
                                     </CCol>
                                 </CRow>
                                 <CRow>
@@ -73,8 +89,7 @@ export default class OptionPanel extends Component {
                                         <CLabel size="sm" className="pull-left">Case Sensitive: </CLabel>
                                     </CCol>
                                     <CCol xs="6" sm="6" md="6" className="text-center">
-                                        {/* <CInput className="form-check-input" type="checkbox" name="caseSensitive" defaultChecked={this.props.caseSensitive} onChange={this.props.bindOptionCheckbox} /> */}
-                                        <CSwitch className={'mx-1'} variant={'3d'} color={'success'} name="caseSensitive" defaultChecked={this.props.caseSensitive} onChange={this.props.bindOptionCheckbox} size="sm"/>
+                                        <CSwitch className={'mx-1'} variant={'3d'} color={'success'} name="caseSensitive" defaultChecked={this.props.caseSensitive} onChange={this.props.bindOptionCheckbox} size="sm" />
                                     </CCol>
                                 </CRow>
                                 <CRow>
@@ -82,8 +97,7 @@ export default class OptionPanel extends Component {
                                         <CLabel size="sm" className="pull-left">Show only matches: </CLabel>
                                     </CCol>
                                     <CCol xs="6" sm="6" md="6" className="text-center">
-                                        {/* <CInput className="form-check-input" type="checkbox" name="showOnlyMatches" defaultChecked={this.props.showOnlyMatches} onChange={this.bindShowMatchesCheckbox} /> */}
-                                        <CSwitch className={'mx-1'} variant={'3d'} color={'success'} name="showOnlyMatches" defaultChecked={this.props.showOnlyMatches}  onChange={this.bindShowMatchesCheckbox}  size="sm"/>
+                                        <CSwitch className={'mx-1'} variant={'3d'} color={'success'} name="showOnlyMatches" defaultChecked={this.props.showOnlyMatches} onChange={this.bindShowMatchesCheckbox} size="sm" />
                                     </CCol>
                                 </CRow>
                                 <CRow>
@@ -91,8 +105,7 @@ export default class OptionPanel extends Component {
                                         <CLabel size="sm" className="pull-left">Show Disabled: </CLabel>
                                     </CCol>
                                     <CCol xs="6" sm="6" md="6" className="text-center">
-                                        {/* <CInput className="form-check-input" name="showDisabled" type="checkbox" defaultChecked={this.props.showDisabled} onChange={this.props.bindOptionCheckbox} /> */}
-                                        <CSwitch className={'mx-1'} variant={'3d'} color={'success'}  name="showDisabled"  onChange={this.props.bindOptionCheckbox} defaultChecked={this.props.showDisabled}  size="sm"/>
+                                        <CSwitch className={'mx-1'} variant={'3d'} color={'success'} name="showDisabled" onChange={this.props.bindOptionCheckbox} defaultChecked={this.props.showDisabled} size="sm" />
                                     </CCol>
                                 </CRow>
                                 <CRow>
@@ -118,7 +131,7 @@ export default class OptionPanel extends Component {
                         </CCard>
                     </CDropdownMenu>
                 </CDropdown>
-            </>
+            </Draggable>
         )
     }
 }

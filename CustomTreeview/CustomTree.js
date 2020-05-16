@@ -10,9 +10,14 @@ import { removeNodeAtPath, getNodeAtPath, addNodeUnderParent, changeNodeAtPath, 
 import "react-sortable-tree/style.css";
 import ContextMenu from './Components/ContextMenu'
 import OptionPanel from './Components/OptionPanel'
-import "./Resource/styles.css";
 import 'font-awesome/css/font-awesome.min.css';
 
+const styles = {
+  treeContent: {
+    height: '400px',
+    paddingTop: '10px'
+  }
+}
 
 const isTouchDevice = !!('ontouchstart' in window || navigator.maxTouchPoints);
 const dndBackend = isTouchDevice ? TouchBackend : HTML5Backend;
@@ -189,7 +194,7 @@ export default class CustomTree extends Component {
       this.handleTreeOnChange(matchFamilies)
     }
   }
-  
+
   removeNodesWithoutMatching = (node, path) => {
     let parent = node;
 
@@ -506,7 +511,12 @@ export default class CustomTree extends Component {
     } = this.state;
 
     return (
-      <CCard custom accentColor="primary" headerSlot="Card outline primary" className="text-white" borderColor="primary">
+      <CCard
+        custom accentColor="primary"
+        headerSlot="Card outline primary"
+        className="text-white"
+        borderColor="primary"
+      >
         <CCardBody onKeyUp={this.handleKeyEvent} tabIndex="0">
           <OptionPanel
             handleSearch={this.handleSearchOnChange}
@@ -520,7 +530,7 @@ export default class CustomTree extends Component {
             showOnlyMatches={showOnlyMatches}
           />
           {this.state.initialTreeData !== null &&
-            <div className="tree-content text-white" >
+            <div className="tree-content text-white" style={styles.treeContent}>
               <DndProvider backend={dndBackend}>
                 <SortableTree
                   theme={FileExplorerTheme}
@@ -544,9 +554,15 @@ export default class CustomTree extends Component {
                   nodeItem={this.state.nodeContextState.contextItem}
                   clearContextState={this.clearContextState}
                 />
-                <CModal show={this.state.nodeContextState.nodeModalToggle} toggle={this.toggleModal}
-                  className={'modal-sm modal-primary'}>
-                  <CModalHeader toggle={this.toggleModal}>{this.state.nodeContextState.modalState === 'add' ? "Add Node" : "Edit Node"}</CModalHeader>
+                <CModal
+                  show={this.state.nodeContextState.nodeModalToggle}
+                  toggle={this.toggleModal}
+                  className={'modal-sm modal-primary'}
+                >
+                  <CModalHeader
+                    toggle={this.toggleModal}>
+                    {this.state.nodeContextState.modalState === 'add' ? "Add Node" : "Edit Node"}
+                  </CModalHeader>
                   <CModalBody>
                     <CFormGroup>
                       <CLabel htmlFor="title">Title</CLabel>

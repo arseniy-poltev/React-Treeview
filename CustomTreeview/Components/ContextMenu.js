@@ -21,7 +21,7 @@ export default class ContextMenu extends Component {
             nodeItem: nextProps.nodeContextState.contextItem
         })
     }
-    
+
     handleClose = () => {
         this.setState({
             mouseX: null,
