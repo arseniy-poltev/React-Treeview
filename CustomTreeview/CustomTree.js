@@ -59,7 +59,7 @@ export default class CustomTree extends Component {
 
     axios.post(this.props.treeConfig.appUrl, data, { headers: headers })
       .then(response => {
-        this.setState({ initialTreeData: response.data.data, treeData: response.data.data }, () => {
+        this.setState({ initialTreeData: response.data.payload.data, treeData: response.data.payload.data }, () => {
           this.refreshTreeData();
         });
       });
