@@ -9,6 +9,8 @@ npm i react-dnd-html5-backend
 npm i react-dnd-touch-backend
 npm i @material-ui/core
 npm i axios
+npm i react-draggable
+npm i font-awesome
 ```
 ##Installation and usage
 ```sh
