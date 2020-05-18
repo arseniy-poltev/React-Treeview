@@ -26,10 +26,12 @@ const treeConfig = {
   iconColor: "#23282c",
   infoColor: "#23282c",
   disabledColor: "#a64dff",
-  maxDepth: 10,
-  showDisabled: true,
-  caseSensitive: true,
-  showOnlyMatches: false,
+  settings: {
+    maxDepth: 10,
+    showDisabled: true,
+    caseSensitive: true,
+    showOnlyMatches: false,
+  },
   appUrl: "https://apiexample.com/"
 }
 
