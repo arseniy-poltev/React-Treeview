@@ -139,14 +139,15 @@ export default class CustomTree extends React.Component {
         if (item.children !== undefined && item.children !== null) {
           item.children = this.sortFilterNodesAndChildren(item.children);
         }
-         if (item.disabled !== null && item.disabled !== undefined) {
-          item.disabled = Boolean(item.disabled)
+
+         if (item.disabled === "false" || item.disabled === "true") {
+          item.disabled = JSON.parse(item.disabled)
          };
-         if (item.editable !== null && item.editable !== undefined) {
-          item.editable = Boolean(item.editable)
+         if (item.editable === "false" || item.editable === "true") {
+          item.editable = JSON.parse(item.editable)
          };
-         if (item.expanded !== null && item.expanded !== undefined) {
-          item.expanded = Boolean(item.expanded)
+         if (item.expanded === "false" || item.expanded === "true") {
+          item.expanded = JSON.parse(item.expanded)
          };
         return item;
       });
@@ -216,7 +217,6 @@ export default class CustomTree extends React.Component {
         getNodeKey: ({ treeIndex }) => treeIndex,
       });
 
-      console.log("tmpnode", tmpNode)
       let nodeObject = {};
       if (tmpNode !== null && tmpNode.node !== undefined) {
         nodeObject = tmpNode.node;
@@ -225,9 +225,6 @@ export default class CustomTree extends React.Component {
       }
 
       parent = this.removeNodesWithoutMatching(nodeObject, parentPath)
-
-      console.log("nodeoojbect", parent)
-
     };
 
     return parent;
