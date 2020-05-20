@@ -47,4 +47,82 @@ const treeConfig = {
     </Col>
 </Row>
 
+
+```
+
+
+## Json Data Example 
+
+```
+payload:  [
+            {
+                "title": "Paul Estelle",
+                "icon": "user",
+                "editable": "true",
+                "id": "12",
+                "children": [
+                    {
+                        "expanded": "true",
+                        "title": "Theresa Woodruff",
+                        "icon": "user",
+                        "editable": "false", 
+                        "infoColor": "#bfff00",
+                        "titleColor": "#0000ff",
+                        "iconColor": "#ff4000",
+                        "id": "14",
+                        "children": [
+                            {
+                                "expanded": "true",
+                                "title": "Lee Weekley",
+                                "icon": "user",
+                                "editable": "false",
+                                "infoColor": "#bfff00",
+                                "titleColor": "#0000ff",
+                                "iconColor": "#ff4000",
+                                "id": "14",
+                                "children": [
+                                    {
+                                        "expanded": "false",
+                                        "title": "Estela Anaya",
+                                        "icon": "user",
+                                        "editable": "false",
+                                        "infoColor": "#bfff00",
+                                        "titleColor": "#0000ff",
+                                        "iconColor": "#ff4000",
+                                        "id": "14",
+                                        "children": [
+                                            {
+                                                "expanded": "true",
+                                                "title": "Pauline Lassiter",
+                                                "icon": "user",
+                                                "editable": "false",
+                                                "infoColor": "#bfff00",
+                                                "titleColor": "#0000ff",
+                                                "iconColor": "#ff4000",
+                                                "id": "14",
+                                                "children": [
+                                                    {
+                                                        "expanded": "true",
+                                                        "title": "Nigel Nolen",
+                                                        "icon": "user",
+                                                        "editable": "false",
+                                                        "infoColor": "#bfff00",
+                                                        "titleColor": "#0000ff",
+                                                        "iconColor": "#ff4000",
+                                                        "disabled": "true",
+                                                        "id": "14"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
+                "expanded": "true"
+            }
+        ]
+
 ```
