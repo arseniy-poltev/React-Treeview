@@ -26,14 +26,14 @@ const treeConfig = {
   iconColor: "#23282c",
   infoColor: "#23282c",
   disabledColor: "#a64dff",
-  maxDepth: 10,
-  showDisabled: true,
-  caseSensitive: true,
-  showOnlyMatches: false,
+  settings: {
+    maxDepth: 10,
+    showDisabled: true,
+    caseSensitive: true,
+    showOnlyMatches: false,
+  },
   appUrl: "https://apiexample.com/"
 }
-
-
 
 <Row className="justify-content-center">
     <Col md="4">
@@ -47,12 +47,4 @@ const treeConfig = {
     </Col>
 </Row>
 
-
-You can use this component like this.
 ```
-
-I assume you already installed reactstrap.
-And I didn't integrated with backend api because you didn't provide it.
-So when you import and use this custom tree component, you can call api to fetch data and can send tree data using props.
-
-I already implemented api calling callback functions as well as all functions.
