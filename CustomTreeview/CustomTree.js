@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { CInput, CFormGroup, CButton, CLabel, CModal, CModalHeader, CModalBody, CModalFooter, CCard, CCardBody } from '@coreui/react';
+import { CInput, CFormGroup, CButton, CLabel, CModal, CModalHeader, CModalBody, CModalFooter, CCard, CCardBody, CSpinner } from '@coreui/react';
 import { DndProvider } from 'react-dnd';
 import FileExplorerTheme from 'react-sortable-tree-theme-file-explorer';
 import HTML5Backend from 'react-dnd-html5-backend';
@@ -49,6 +49,7 @@ export default class CustomTree extends React.Component {
       nodeItem: null,
       optionPanelState: false,
       expandCollapseOption: false,
+      isLoading: false
     };
   }
   UNSAFE_componentWillMount() {
@@ -56,10 +57,10 @@ export default class CustomTree extends React.Component {
       'Content-Type': 'application/json',
     }
     const data = {};
-
+    this.setState({ isLoading: true })
     axios.post(this.props.treeConfig.appUrl, data, { headers: headers })
       .then(response => {
-        this.setState({ initialTreeData: response.data.payload, treeData: response.data.payload }, () => {
+        this.setState({ initialTreeData: response.data.payload, treeData: response.data.payload, isLoading: false }, () => {
           this.refreshTreeData();
         });
       });
@@ -93,6 +94,7 @@ export default class CustomTree extends React.Component {
 
   refreshTreeData = () => {
     let res = this.sortFilterNodesAndChildren(this.state.treeData);
+    console.log(res)
     this.setState({ treeData: res })
   }
 
@@ -140,15 +142,15 @@ export default class CustomTree extends React.Component {
           item.children = this.sortFilterNodesAndChildren(item.children);
         }
 
-         if (item.disabled === "false" || item.disabled === "true") {
+        if (item.disabled === "false" || item.disabled === 'true') {
           item.disabled = JSON.parse(item.disabled)
-         };
-         if (item.editable === "false" || item.editable === "true") {
+        };
+        if (item.editable === "false" || item.editable === 'true') {
           item.editable = JSON.parse(item.editable)
-         };
-         if (item.expanded === "false" || item.expanded === "true") {
+        };
+        if (item.expanded === "false" || item.expanded === 'true') {
           item.expanded = JSON.parse(item.expanded)
-         };
+        };
         return item;
       });
     }
@@ -475,6 +477,20 @@ export default class CustomTree extends React.Component {
     })
   }
 
+  getNodeColor(rowInfo, itemType) {
+    let itemColor = "";
+    if(rowInfo.node.disabled) {
+      itemColor = this.state.disabledColor;
+    } else {
+      if(rowInfo.node[itemType] !== null & rowInfo.node[itemType] !== undefined) {
+        itemColor = rowInfo.node[itemType];
+      } else {
+        itemColor = this.state[itemType];
+      }
+    }
+    return itemColor;
+  }
+
   generateCustomNodeProps = (rowInfo) => ({
     onContextMenu: (event) => {
       event.preventDefault();
@@ -490,15 +506,15 @@ export default class CustomTree extends React.Component {
     lowerSiblingCounts: [],
     title: (
       <div className='justify-content-between' style={{ width: '100%' }} >
-        <i className={`fa fa-${rowInfo.node.icon} fa-md mr-2`} style={{ color: rowInfo.node.disabled ? this.state.disabledColor : this.state.iconColor }}></i>
-        <span style={{ color: rowInfo.node.disabled ? this.state.disabledColor : this.state.titleColor }}>
+        <i className={`fa fa-${rowInfo.node.icon} fa-md mr-2`} style={{ color: this.getNodeColor(rowInfo, "iconColor") }}></i>
+        <span style={{ color: this.getNodeColor(rowInfo, "titleColor") }}>
           {rowInfo.node.title}
         </span>
       </div>
     ),
     buttons: [
       <>
-        <span style={{ marginRight: '10px', color: rowInfo.node.disabled ? this.state.disabledColor : this.state.infoColor }}>
+        <span style={{ marginRight: '10px', color: this.getNodeColor(rowInfo, "infoColor") }}>
           {rowInfo.node.info}
         </span>
       </>
@@ -509,7 +525,7 @@ export default class CustomTree extends React.Component {
     if (!node.child) {
       return node;
     }
-  
+
     const children = node.child
       .map(child => this.convertTree(child));
     delete node.child; // optional
@@ -546,6 +562,22 @@ export default class CustomTree extends React.Component {
             handleExportJson={this.handleExportJson}
             showOnlyMatches={showOnlyMatches}
           />
+          {this.state.isLoading &&
+            <div className="sk-circle">
+              <div className="sk-circle1 sk-child"></div>
+              <div className="sk-circle2 sk-child"></div>
+              <div className="sk-circle3 sk-child"></div>
+              <div className="sk-circle4 sk-child"></div>
+              <div className="sk-circle5 sk-child"></div>
+              <div className="sk-circle6 sk-child"></div>
+              <div className="sk-circle7 sk-child"></div>
+              <div className="sk-circle8 sk-child"></div>
+              <div className="sk-circle9 sk-child"></div>
+              <div className="sk-circle10 sk-child"></div>
+              <div className="sk-circle11 sk-child"></div>
+              <div className="sk-circle12 sk-child"></div>
+            </div>
+          }
           {this.state.initialTreeData !== null &&
             <div className="tree-content text-white" style={styles.treeContent}>
               <DndProvider backend={dndBackend}>
