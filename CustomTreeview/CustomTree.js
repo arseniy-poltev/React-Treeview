@@ -11,6 +11,7 @@ import { removeNodeAtPath, getNodeAtPath, addNodeUnderParent, changeNodeAtPath, 
 import "react-sortable-tree/style.css";
 import ContextMenu from './Components/ContextMenu'
 import OptionPanel from './Components/OptionPanel'
+import './Resource/styles.css'
 import 'font-awesome/css/font-awesome.min.css';
 
 const styles = {
