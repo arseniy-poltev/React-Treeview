@@ -54,8 +54,6 @@ export default class CustomTree extends React.Component {
       isLoading: false,
       treeState: localStorage.getItem("t_setting")
     };
-
-    this.treeEditModal = React.createRef();
   }
   UNSAFE_componentWillMount() {
     const headers = {
@@ -679,7 +677,6 @@ export default class CustomTree extends React.Component {
                   show={this.state.nodeContextState.nodeModalToggle}
                   toggle={this.toggleModal}
                   className={'modal-sm modal-primary custom-modal'}
-                  ref={this.treeEditModal}
                   style={modalStyles}
                 >
                   <CModalHeader
