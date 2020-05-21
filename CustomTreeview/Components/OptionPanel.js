@@ -1,19 +1,9 @@
 import React, { Component } from 'react';
-import { CDropdown, CDropdownToggle, CDropdownMenu, CCard, CCardBody, CRow, CCol, CLabel, CInput, CButton, CSwitch } from '@coreui/react';
+import { CDropdown, CDropdownToggle, CDropdownMenu, CCard, CCardBody, CRow, CCol, CLabel, CInput, CButton, CSwitch, CCollapse, CButtonGroup } from '@coreui/react';
 import { freeSet } from '@coreui/icons';
 import { CIcon } from '@coreui/icons-react';
 import Draggable from 'react-draggable';
 
-const styles = {
-    optionBar: {
-        cursor: 'pointer',
-        width: '100%',
-    },
-    dropdownMenu: {
-        width: '100%',
-        padding: 0
-    }
-}
 export default class OptionPanel extends Component {
     constructor(props) {
         super(props);
@@ -22,7 +12,18 @@ export default class OptionPanel extends Component {
             toggleExpandOption: this.props.expandCollapseOption,
             fields: {
                 searchString: this.props.searchString
-            }
+            },
+            optionBarStyle: {
+                cursor: 'pointer',
+                width: '100%',
+            },
+            dropdownMenuStyle: {
+                width: '100%',
+                padding: 0,
+                zIndex: 1030,
+                marginTop: 2
+            },
+            saveStateToggle: false
         }
 
         this.toggleOption = this.toggleOption.bind(this)
@@ -55,25 +56,56 @@ export default class OptionPanel extends Component {
         this.props.handleSearch(e);
     }
 
+    handleDragEvent = () => {
+        if (this.state.optionPanelState) {
+            this.setState({ optionPanelState: false })
+        }
+        this.setState(prevState => ({
+            dropdownMenuStyle: {
+                ...prevState.dropdownMenuStyle,
+                position: "absolute"
+            }
+        }))
+    }
+
+    getStateBtnTxt = () => {
+        if(this.state.saveStateToggle) {
+            return "Clear";
+        } else {
+            return "Save";
+        }
+    }
+
+    SaveRemoveState = () => {
+        if(this.state.saveStateToggle) {
+            localStorage.removeItem("t_setting")
+        } else {
+            this.props.handleSaveState("save");
+        }
+        this.setState({saveStateToggle: !this.state.saveStateToggle})
+    }
+
     render() {
         return (
             <Draggable
                 handle=".handle"
                 position={null}
                 scale={1}
+                onStart={this.handleDragEvent}
             >
-                <CDropdown custom show={this.state.optionPanelState} toggle={() => { this.toggleOption() }} style={{ width: '100%', zIndex: 2 }} className="justify-content-space-between">
-                    <CButton color="primary" className="btn-brand btn-sm handle" style={{ cursor: "move" }}><CIcon name="cil-move" /></CButton>
-                    <CDropdownToggle
-                        onClick={() => { this.toggleOption() }}
-                        aria-expanded={this.state.optionPanelState}
-                        className="option-bar justify-content-space-between text-center"
-                        color="primary"
-                        style={styles.optionBar}
-                    >Option
+                <div style={{ zIndex: 9999 }}>
+                    <CButtonGroup className="justify-content-space-between" style={{width: "100%"}}>
+                        <CButton color="primary" className="btn-brand btn-sm handle" style={{ cursor: "move" }} ><CIcon name="cil-move" /></CButton>
+                        <CButton
+                            onClick={() => { this.toggleOption() }}
+                            className="option-bar justify-content-space-between text-center"
+                            color="primary"
+                            style={this.state.optionBarStyle}
+                        >Option
                         {"  "}
-                    </CDropdownToggle>
-                    <CDropdownMenu style={styles.dropdownMenu}>
+                        </CButton>
+                    </CButtonGroup>
+                    <CCollapse style={this.state.dropdownMenuStyle} custom show={this.state.optionPanelState}>
                         <CCard custom color="primary" className="text-white" style={{ marginBottom: 0 }}>
                             <CCardBody>
                                 <CRow>
@@ -121,7 +153,15 @@ export default class OptionPanel extends Component {
                                 </CRow>
                                 <CRow>
                                     <CCol xs="6" sm="6" md="6">
-                                        <CLabel className="pull-left" size="sm">Save State: </CLabel>
+                                        <CLabel className="pull-left" size="sm">Remember State: </CLabel>
+                                    </CCol>
+                                    <CCol xs="6" sm="6" md="6">
+                                        <CButton color="secondary" size="sm" block variant="outline" onClick={this.SaveRemoveState}>{this.getStateBtnTxt()}</CButton>
+                                    </CCol>
+                                </CRow>
+                                <CRow>
+                                    <CCol xs="6" sm="6" md="6">
+                                        <CLabel className="pull-left" size="sm">Export Json: </CLabel>
                                     </CCol>
                                     <CCol xs="6" sm="6" md="6">
                                         <CButton color="secondary" size="sm" block variant="outline" onClick={this.props.handleExportJson}>Export</CButton>
@@ -129,8 +169,8 @@ export default class OptionPanel extends Component {
                                 </CRow>
                             </CCardBody>
                         </CCard>
-                    </CDropdownMenu>
-                </CDropdown>
+                    </CCollapse>
+                </div>
             </Draggable>
         )
     }

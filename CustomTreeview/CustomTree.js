@@ -6,7 +6,8 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import TouchBackend from 'react-dnd-touch-backend';
 import axios from 'axios';
 import { SortableTreeWithoutDndContext as SortableTree } from "./src/react-sortable-tree";
-import { removeNodeAtPath, getNodeAtPath, addNodeUnderParent, changeNodeAtPath, toggleExpandedForAll } from './utils/tree-data-utils';
+// import SortableTree  from "./src/react-sortable-tree";
+import { removeNodeAtPath, getNodeAtPath, addNodeUnderParent, changeNodeAtPath, toggleExpandedForAll, getTreeFromFlatData } from './utils/tree-data-utils';
 import "react-sortable-tree/style.css";
 import ContextMenu from './Components/ContextMenu'
 import OptionPanel from './Components/OptionPanel'
@@ -26,6 +27,7 @@ export default class CustomTree extends React.Component {
     super(props);
     this.state = {
       searchString: "",
+      initialSearchString: "",
       searchToggleState: false,
       searchFocusIndex: 0,
       searchFoundCount: 0,
@@ -49,21 +51,57 @@ export default class CustomTree extends React.Component {
       nodeItem: null,
       optionPanelState: false,
       expandCollapseOption: false,
-      isLoading: false
+      isLoading: false,
+      treeState: localStorage.getItem("t_setting")
     };
+
+    this.treeEditModal = React.createRef();
   }
   UNSAFE_componentWillMount() {
     const headers = {
       'Content-Type': 'application/json',
     }
     const data = {};
-    this.setState({ isLoading: true })
+    this.setState({ isLoading: true });
+    localStorage.removeItem("t_setting");
     axios.post(this.props.treeConfig.appUrl, data, { headers: headers })
       .then(response => {
-        this.setState({ initialTreeData: response.data.payload, treeData: response.data.payload, isLoading: false }, () => {
+        const initData = this.loadTreeState(response.data)
+        let treeData = this.makeTreeData(initData);
+        this.setState({ initialTreeData: treeData, treeData: treeData, isLoading: false }, () => {
           this.refreshTreeData();
         });
       });
+  }
+
+  loadTreeState = (flatData) => {
+    let treeState = this.state.treeState;
+    if(treeState) {
+      treeState = JSON.parse(treeState);
+
+      if(treeState.length > 0) {
+        flatData.map(item => {
+          treeState.map(sItem => {
+            if(item.id === sItem.id) {
+              item.expanded = sItem.expanded;
+            }
+          })
+
+          return item;
+        })
+      }
+    }
+    return flatData;
+  }
+  makeTreeData = (flatData) => {
+    let treeData = getTreeFromFlatData({
+      flatData: flatData.map(node => ({ ...node, parent: node.parent !== "" ? node.parent : null })),
+      getKey: node => node.id,
+      getParentKey: node => node.parent,
+      rootKey: null
+    });
+
+    return treeData;
   }
 
   handleExportJson = async () => {
@@ -94,7 +132,6 @@ export default class CustomTree extends React.Component {
 
   refreshTreeData = () => {
     let res = this.sortFilterNodesAndChildren(this.state.treeData);
-    console.log(res)
     this.setState({ treeData: res })
   }
 
@@ -114,7 +151,8 @@ export default class CustomTree extends React.Component {
     }
 
     if (e.target.name === 'caseSensitive') {
-      this.setState({ searchString: '' })
+      // this.setState({ searchString: '' })
+      this.setState({searchString: e.target.checked ? this.state.initialSearchString : this.state.initialSearchString.toUpperCase()})
     }
     // this.setState({ treeData: this.state.initialTreeData })
 
@@ -366,8 +404,10 @@ export default class CustomTree extends React.Component {
 
   handleSearchOnChange = e => {
     this.setState({
-      searchString: e.target.value,
+      initialSearchString: e.target.value,
+      searchString: this.state.caseSensitive ? e.target.value : e.target.value.toUpperCase()
     });
+
 
     if (e.target.value === "") {
       this.setState({ treeData: this.state.initialTreeData })
@@ -492,6 +532,10 @@ export default class CustomTree extends React.Component {
   }
 
   generateCustomNodeProps = (rowInfo) => ({
+    onClick: (event) => {
+      rowInfo.clicked = true;
+      return rowInfo;
+    },
     onContextMenu: (event) => {
       event.preventDefault();
       this.setState({
@@ -532,17 +576,43 @@ export default class CustomTree extends React.Component {
     return Object.assign({}, node, { children });
   };
 
+  fetchTreeState = (tData, tStateList) => {
+
+    tData.map(item => {
+      let tmpState = {};
+      tmpState.id = item.id;
+      tmpState.expanded = item.expanded
+      tStateList.push(tmpState);
+      if(item.children) {
+        this.fetchTreeState(item.children, tStateList)
+      }
+    })
+
+    return tStateList;
+  }
+  handleSaveState = () => {
+    let treeState = [];
+    treeState = this.fetchTreeState(this.state.treeData, []);
+    let saveString = JSON.stringify(treeState);
+    localStorage.setItem("t_setting", saveString);
+    this.setState({treeState: saveString});
+
+    console.log(this.treeEditModal)
+  }
 
   render() {
     const {
       treeData,
       searchString,
+      initialSearchString,
       searchFocusIndex,
       showDisabled,
       caseSensitive,
-      showOnlyMatches
+      showOnlyMatches,
+      treeState
     } = this.state;
 
+    var modalStyles = {overlay: {zIndex: 9999}};
     return (
       <CCard
         custom accentColor="primary"
@@ -553,13 +623,14 @@ export default class CustomTree extends React.Component {
         <CCardBody onKeyUp={this.handleKeyEvent} tabIndex="0">
           <OptionPanel
             handleSearch={this.handleSearchOnChange}
-            searchString={searchString}
             toggleNodeExpansion={this.toggleNodeExpansion}
             expandCollapseOption={this.state.toggleNodeExpansion}
             bindOptionCheckbox={this.bindOptionCheckbox}
+            handleExportJson={this.handleExportJson}
+            handleSaveState={this.handleSaveState}
+            searchString={initialSearchString}
             showDisabled={showDisabled}
             caseSensitive={caseSensitive}
-            handleExportJson={this.handleExportJson}
             showOnlyMatches={showOnlyMatches}
           />
           {this.state.isLoading &&
@@ -594,6 +665,7 @@ export default class CustomTree extends React.Component {
                   canDrop={({ nextParent }) => !nextParent || !nextParent.noChildren}
                   searchFinishCallback={this.handleSearchFinishCallback}
                   generateNodeProps={this.generateCustomNodeProps}
+                  onlyExpandSearchedNodes={true}
                 />
                 <ContextMenu
                   nodeContextState={this.state.nodeContextState}
@@ -606,7 +678,9 @@ export default class CustomTree extends React.Component {
                 <CModal
                   show={this.state.nodeContextState.nodeModalToggle}
                   toggle={this.toggleModal}
-                  className={'modal-sm modal-primary'}
+                  className={'modal-sm modal-primary custom-modal'}
+                  ref={this.treeEditModal}
+                  style={modalStyles}
                 >
                   <CModalHeader
                     toggle={this.toggleModal}>
