@@ -108,7 +108,6 @@ export default class OptionPanel extends Component {
                     <CButtonGroup className="justify-content-space-between handle" style={{width: "100%"}}>
                         <CButton color="primary" className="btn-brand btn-sm" ><CIcon name="cil-move" /></CButton>
                         <CButton
-                            // onClick={() => { this.toggleOption() }}
                             className="option-bar justify-content-space-between text-center"
                             color="primary"
                             style={this.state.optionBarStyle}

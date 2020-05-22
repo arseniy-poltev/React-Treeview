@@ -6,7 +6,6 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import TouchBackend from 'react-dnd-touch-backend';
 import axios from 'axios';
 import { SortableTreeWithoutDndContext as SortableTree } from "./src/react-sortable-tree";
-// import SortableTree  from "./src/react-sortable-tree";
 import { removeNodeAtPath, getNodeAtPath, addNodeUnderParent, changeNodeAtPath, toggleExpandedForAll, getTreeFromFlatData } from './utils/tree-data-utils';
 import "react-sortable-tree/style.css";
 import ContextMenu from './Components/ContextMenu'
@@ -164,10 +163,8 @@ export default class CustomTree extends React.Component {
     }
 
     if (e.target.name === 'caseSensitive') {
-      // this.setState({ searchString: '' })
       this.setState({ searchString: e.target.checked ? this.state.initialSearchString : this.state.initialSearchString.toUpperCase() })
     }
-    // this.setState({ treeData: this.state.initialTreeData })
 
     let checkState = {};
     checkState[e.target.name] = e.target.checked;
@@ -605,7 +602,7 @@ export default class CustomTree extends React.Component {
 
     const children = node.child
       .map(child => this.convertTree(child));
-    delete node.child; // optional
+    delete node.child; 
     return Object.assign({}, node, { children });
   };
 
