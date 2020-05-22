@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { CDropdown, CDropdownToggle, CDropdownMenu, CCard, CCardBody, CRow, CCol, CLabel, CInput, CButton, CSwitch, CCollapse, CButtonGroup } from '@coreui/react';
+import { CCard, CCardBody, CRow, CCol, CLabel, CInput, CButton, CSwitch, CCollapse, CButtonGroup } from '@coreui/react';
 import { freeSet } from '@coreui/icons';
 import { CIcon } from '@coreui/icons-react';
 import Draggable from 'react-draggable';
@@ -23,7 +23,11 @@ export default class OptionPanel extends Component {
                 zIndex: 1030,
                 marginTop: 2
             },
-            saveStateToggle: false
+            position: {
+                mouseX: 0,
+                mouseY: 0
+            },
+            saveStateToggle: true
         }
 
         this.toggleOption = this.toggleOption.bind(this)
@@ -36,7 +40,7 @@ export default class OptionPanel extends Component {
     }
 
     toggleOption = () => {
-        return this.setState({ optionPanelState: !this.state.optionPanelState })
+        console.log("onclick")
     }
 
     handleExpandToggle = () => {
@@ -56,16 +60,23 @@ export default class OptionPanel extends Component {
         this.props.handleSearch(e);
     }
 
-    handleDragEvent = () => {
-        if (this.state.optionPanelState) {
-            this.setState({ optionPanelState: false })
+    handleDragEvent = (event, ui) => {
+        if(ui.lastX === this.state.position.mouseX && ui.lastY === this.state.position.mouseY) {
+            this.setState({ optionPanelState: !this.state.optionPanelState });
+           
+        } else {
+            let position = {
+                mouseX: ui.lastX,
+                mouseY: ui.lastY
+            };
+            this.setState({position});
+            this.setState(prevState => ({
+                dropdownMenuStyle: {
+                    ...prevState.dropdownMenuStyle,
+                    position: "absolute"
+                }
+            }))
         }
-        this.setState(prevState => ({
-            dropdownMenuStyle: {
-                ...prevState.dropdownMenuStyle,
-                position: "absolute"
-            }
-        }))
     }
 
     getStateBtnTxt = () => {
@@ -78,7 +89,7 @@ export default class OptionPanel extends Component {
 
     SaveRemoveState = () => {
         if(this.state.saveStateToggle) {
-            localStorage.removeItem("t_setting")
+            localStorage.removeItem("t_setting");
         } else {
             this.props.handleSaveState("save");
         }
@@ -91,13 +102,13 @@ export default class OptionPanel extends Component {
                 handle=".handle"
                 position={null}
                 scale={1}
-                onStart={this.handleDragEvent}
+                onStop={this.handleDragEvent}
             >
                 <div style={{ zIndex: 9999 }}>
-                    <CButtonGroup className="justify-content-space-between" style={{width: "100%"}}>
-                        <CButton color="primary" className="btn-brand btn-sm handle" style={{ cursor: "move" }} ><CIcon name="cil-move" /></CButton>
+                    <CButtonGroup className="justify-content-space-between handle" style={{width: "100%"}}>
+                        <CButton color="primary" className="btn-brand btn-sm" ><CIcon name="cil-move" /></CButton>
                         <CButton
-                            onClick={() => { this.toggleOption() }}
+                            // onClick={() => { this.toggleOption() }}
                             className="option-bar justify-content-space-between text-center"
                             color="primary"
                             style={this.state.optionBarStyle}
