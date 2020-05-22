@@ -1,0 +1,27 @@
+- checkCanDrag
+Check if node drag node
+req: node, res: boolean
+- saveNode
+Save node when new node added or edited.
+- handleNodeCheckbox
+Call when node checkbox onChange
+- handleOnMobeNode
+Call when drag and drop node and update treeData
+- handleSaveState
+Save tree expanded or collapse, node checked or unchecked handleSaveState
+- handleSearchOnChange
+Call when searchbox onChange
+- handleTreeOnChange
+Call when treeState was changed
+- loadTreeState
+Load saved tree state such as node expanded or collapse, checked, unchecked
+- makeTreeData
+Convert flatData to treeData
+- removeNode
+Remove node from selected node data
+- selectNextMatch
+Get Search result and select matched next node
+- selectPrevMatch
+Get Search result and select matched previous node
+- uuidv4
+Generate uuid for node if node doesn't have uuid
