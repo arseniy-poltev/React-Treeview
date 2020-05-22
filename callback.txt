@@ -25,3 +25,20 @@ Get Search result and select matched next node
 Get Search result and select matched previous node
 - uuidv4
 Generate uuid for node if node doesn't have uuid
+
+
+
+
+json example: 
+ {
+	"id": "G1G1G1G1-G1G1-G1G1-G1G1-G1G1G1G1G1G1",
+	"parent": "users_root",
+	"title": "Christopher Joseph",
+	"icon": "user-circle",
+	"editable": true,
+	"info": "12",
+	"titleColor": "red",
+	"iconColor": "red",
+	"infoColor": "blue",
+	"checked": true
+},
