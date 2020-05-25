@@ -63,10 +63,6 @@ export default class CustomTree extends React.Component {
       'Cache-Control': 'no-cache, no-store'
     }
 
-    const months = ['Aaaa zzz', 'Aaaaaa bbb', 'Bbbbbb bbb', 'Bbbb ccc'];
-    months.sort();
-    console.log(months);
-
     const data = {};
     this.setState({ isLoading: true });
     // localStorage.removeItem("t_setting");
