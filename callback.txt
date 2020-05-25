@@ -23,6 +23,8 @@ Remove node from selected node data
 Get Search result and select matched next node
 - selectPrevMatch
 Get Search result and select matched previous node
+- displayLoadingSpinner 
+Display loading spinner
 - uuidv4
 Generate uuid for node if node doesn't have uuid
 
