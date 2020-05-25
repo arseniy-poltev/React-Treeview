@@ -390,7 +390,7 @@ function getNodeDataAtTreeIndexOrNextIndex({
     return map({
       treeData,
       callback: ({ node }) => ({ ...node, expanded }),
-      getNodeKey: ({ treeIndex }) => treeIndex,
+      getNodeKey: ({ node }) => node.id,
       ignoreCollapsed: false,
     });
   }

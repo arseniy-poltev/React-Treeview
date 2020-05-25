@@ -61,15 +61,15 @@ export default class OptionPanel extends Component {
     }
 
     handleDragEvent = (event, ui) => {
-        if(ui.lastX === this.state.position.mouseX && ui.lastY === this.state.position.mouseY) {
+        if (ui.lastX === this.state.position.mouseX && ui.lastY === this.state.position.mouseY) {
             this.setState({ optionPanelState: !this.state.optionPanelState });
-           
+
         } else {
             let position = {
                 mouseX: ui.lastX,
                 mouseY: ui.lastY
             };
-            this.setState({position});
+            this.setState({ position });
             this.setState(prevState => ({
                 dropdownMenuStyle: {
                     ...prevState.dropdownMenuStyle,
@@ -80,7 +80,7 @@ export default class OptionPanel extends Component {
     }
 
     getStateBtnTxt = () => {
-        if(this.state.saveStateToggle) {
+        if (this.state.saveStateToggle) {
             return "Clear";
         } else {
             return "Save";
@@ -88,24 +88,25 @@ export default class OptionPanel extends Component {
     }
 
     SaveRemoveState = () => {
-        if(this.state.saveStateToggle) {
+        if (this.state.saveStateToggle) {
             localStorage.removeItem("t_setting");
         } else {
             this.props.handleSaveState("save");
         }
-        this.setState({saveStateToggle: !this.state.saveStateToggle})
+        this.setState({ saveStateToggle: !this.state.saveStateToggle })
     }
 
     render() {
         return (
             <Draggable
+                allowAnyClick={false}
                 handle=".handle"
                 position={null}
                 scale={1}
                 onStop={this.handleDragEvent}
             >
                 <div style={{ zIndex: 9999 }}>
-                    <CButtonGroup className="justify-content-space-between handle" style={{width: "100%"}}>
+                    <CButtonGroup className="justify-content-space-between handle" style={{ width: "100%" }}>
                         <CButton color="primary" className="btn-brand btn-sm" ><CIcon name="cil-move" /></CButton>
                         <CButton
                             className="option-bar justify-content-space-between text-center"
