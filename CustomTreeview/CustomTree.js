@@ -63,13 +63,8 @@ export default class CustomTree extends React.Component {
       'Cache-Control': 'no-cache, no-store'
     }
 
-    const months = ['Aaaa zzz', 'Aaaaaa bbb', 'Bbbbbb bbb', 'Bbbb ccc'];
-    months.sort();
-    console.log(months);
-
     const data = {};
     this.setState({ isLoading: true });
-    // localStorage.removeItem("t_setting");
     axios.post(this.props.treeConfig.appUrl, data, { headers: headers })
       .then(response => {
         const initData = this.loadTreeState(response.data);
@@ -169,10 +164,6 @@ export default class CustomTree extends React.Component {
     }
 
     if (e.target.name === 'caseSensitive') {
-      // this.setState({ searchString: e.target.checked ? this.state.initialSearchString : this.state.initialSearchString.toUpperCase() }, () => {
-      //   console.log('this.state.searchString', this.state.searchString);
-      // })
-
       if (!e.target.checked) {
         if (this.state.initialSearchString.toUpperCase() === this.state.initialSearchString) {
           this.setState({ searchString: this.state.initialSearchString.toLocaleLowerCase() })
