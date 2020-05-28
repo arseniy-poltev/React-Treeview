@@ -104,7 +104,7 @@ export default class OptionPanel extends Component {
                 scale={1}
                 onStop={this.handleDragEvent}
             >
-                <div style={{ zIndex: 9999, position: 'relative' }}>
+                <div style={{ zIndex: 1050, position: 'relative' }}>
                     <CButtonGroup className="justify-content-space-between handle" style={{ width: "100%", position: 'relative' }}>
                         <CButton
                             className="option-bar justify-content-space-between text-center"
