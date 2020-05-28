@@ -104,14 +104,15 @@ export default class OptionPanel extends Component {
                 scale={1}
                 onStop={this.handleDragEvent}
             >
-                <div style={{ zIndex: 9999 }}>
-                    <CButtonGroup className="justify-content-space-between handle" style={{ width: "100%" }}>
-                        <CButton color="primary" className="btn-brand btn-sm" ><CIcon name="cil-move" /></CButton>
+                <div style={{ zIndex: 9999, position: 'relative' }}>
+                    <CButtonGroup className="justify-content-space-between handle" style={{ width: "100%", position: 'relative' }}>
                         <CButton
                             className="option-bar justify-content-space-between text-center"
                             color="primary"
                             style={this.state.optionBarStyle}
-                        >Option
+                        >
+                            <CIcon name="cil-move" className="pull-left"/>
+                            Option
                         {"  "}
                         </CButton>
                     </CButtonGroup>

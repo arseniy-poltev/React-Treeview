@@ -572,7 +572,7 @@ export default class CustomTree extends React.Component {
     lowerSiblingCounts: [],
     title: (
       <div className='justify-content-between' style={{ width: '100%' }} >
-        <img src={rowInfo.node.checked?checkIcon:unCheckIcon} style={{width: 20, height: 20, marginBottom:4, cursor: 'pointer'}} name="checkbox"/>
+        <img src={rowInfo.node.checked?checkIcon:unCheckIcon} style={{width: 20, height: 20, marginTop:-3, cursor: 'pointer'}} name="checkbox"/>
         <i className={`fa fa-${rowInfo.node.icon} fa-md ml-3 mr-1`} style={{ color: this.getNodeColor(rowInfo, "iconColor") }}></i>
         <span style={{ color: this.getNodeColor(rowInfo, "titleColor") }}>
           {rowInfo.node.title}
@@ -675,7 +675,7 @@ export default class CustomTree extends React.Component {
         headerSlot="Card outline primary"
         className="text-white"
         borderColor="primary"
-        style={{ zIndex: 0, position: "relative" }}
+        // style={{ zIndex: 0, position: "relative" }}
       >
         <CCardBody onKeyUp={this.handleKeyEvent} tabIndex="0">
           <Draggable
