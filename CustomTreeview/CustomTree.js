@@ -14,6 +14,8 @@ import './Resource/styles.css'
 import 'font-awesome/css/font-awesome.min.css';
 import Draggable from 'react-draggable';
 import { match } from "assert";
+import checkIcon from './Resource/icons/checkbox_checked.png';
+import unCheckIcon from './Resource/icons/checkbox_unchecked.png';
 
 const styles = {
   treeContent: {
@@ -552,8 +554,9 @@ export default class CustomTree extends React.Component {
 
   generateCustomNodeProps = (rowInfo) => ({
     onClick: (event) => {
-      rowInfo.clicked = true;
-      return rowInfo;
+      if(event.target.name === 'checkbox') {
+        this.handleNodeCheckbox(rowInfo);
+      }
     },
     onContextMenu: (event) => {
       event.preventDefault();
@@ -569,9 +572,7 @@ export default class CustomTree extends React.Component {
     lowerSiblingCounts: [],
     title: (
       <div className='justify-content-between' style={{ width: '100%' }} >
-        <CFormGroup check className="checkbox">
-          <CInput className="form-check-input" type="checkbox" onChange={e => this.handleNodeCheckbox(rowInfo, e)} defaultChecked={rowInfo.node.checked} />
-        </CFormGroup>
+        <img src={rowInfo.node.checked?checkIcon:unCheckIcon} style={{width: 20, height: 20, marginBottom:4, cursor: 'pointer'}} name="checkbox"/>
         <i className={`fa fa-${rowInfo.node.icon} fa-md ml-3 mr-1`} style={{ color: this.getNodeColor(rowInfo, "iconColor") }}></i>
         <span style={{ color: this.getNodeColor(rowInfo, "titleColor") }}>
           {rowInfo.node.title}
@@ -587,9 +588,9 @@ export default class CustomTree extends React.Component {
     ]
   })
 
-  handleNodeCheckbox = (rowInfo, e) => {
+  handleNodeCheckbox = (rowInfo) => {
     let newRowInfo = rowInfo.node;
-    newRowInfo.checked = e.target.checked;
+    newRowInfo.checked = rowInfo.node.checked ? false : true;
 
     // Call api to update node
     // Request: newRowInfo, Response: TreeData

@@ -20,7 +20,6 @@ export default class OptionPanel extends Component {
             dropdownMenuStyle: {
                 width: '100%',
                 padding: 0,
-                zIndex: 1030,
                 marginTop: 2
             },
             position: {
@@ -123,7 +122,7 @@ export default class OptionPanel extends Component {
                                     <CCol xs="6" sm="6" md="6">
                                         <CLabel size="sm" className="pull-left">Search: </CLabel>
                                     </CCol>
-                                    <CCol xs="6" sm="6" md="6">
+                                    <CCol xs="6" sm="6" md="6" style={{display: 'flex', justify: 'center', alignItems: 'center'}}>
                                         <CInput type="text" bsSize="sm" value={this.state.searchString || ""} onChange={this.bindSearch} />
                                     </CCol>
                                 </CRow>
@@ -131,15 +130,15 @@ export default class OptionPanel extends Component {
                                     <CCol xs="6" sm="6" md="6">
                                         <CLabel size="sm" className="pull-left">Case Sensitive: </CLabel>
                                     </CCol>
-                                    <CCol xs="6" sm="6" md="6" className="text-center">
-                                        <CSwitch className={'mx-1'} variant={'3d'} color={'success'} name="caseSensitive" defaultChecked={this.props.caseSensitive} onChange={this.props.bindOptionCheckbox} size="sm" />
+                                    <CCol xs="6" sm="6" md="6" className="text-center justify-content-center" style={{display: 'flex', justify: 'center', alignItems: 'center'}}>
+                                        <CSwitch style={{marginTop: 'auto', marginBottom: 'auto'}} className={'mx-1'} variant={'3d'} color={'success'} name="caseSensitive" defaultChecked={this.props.caseSensitive} onChange={this.props.bindOptionCheckbox} size="sm" />
                                     </CCol>
                                 </CRow>
                                 <CRow>
                                     <CCol xs="6" sm="6" md="6">
                                         <CLabel size="sm" className="pull-left">Show only matches: </CLabel>
                                     </CCol>
-                                    <CCol xs="6" sm="6" md="6" className="text-center">
+                                    <CCol xs="6" sm="6" md="6" className="text-center justify-content-center" style={{display: 'flex', justify: 'center', alignItems: 'center'}}>
                                         <CSwitch className={'mx-1'} variant={'3d'} color={'success'} name="showOnlyMatches" defaultChecked={this.props.showOnlyMatches} onChange={this.bindShowMatchesCheckbox} size="sm" />
                                     </CCol>
                                 </CRow>
@@ -147,15 +146,15 @@ export default class OptionPanel extends Component {
                                     <CCol xs="6" sm="6" md="6">
                                         <CLabel size="sm" className="pull-left">Show Disabled: </CLabel>
                                     </CCol>
-                                    <CCol xs="6" sm="6" md="6" className="text-center">
-                                        <CSwitch className={'mx-1'} variant={'3d'} color={'success'} name="showDisabled" onChange={this.props.bindOptionCheckbox} defaultChecked={this.props.showDisabled} size="sm" />
+                                    <CCol xs="6" sm="6" md="6" className="text-center justify-content-center" style={{display: 'flex', justify: 'center', alignItems: 'center'}}>
+                                        <CSwitch className={'mx-1'} variant={'3d'} color={'success'} name="showDisabled"  onChange={this.props.bindOptionCheckbox} defaultChecked={this.props.showDisabled} size="sm" />
                                     </CCol>
                                 </CRow>
                                 <CRow>
                                     <CCol xs="6" sm="6" md="6">
                                         <CLabel size="sm" className="pull-left">Toggle All: </CLabel>
                                     </CCol>
-                                    <CCol xs="6" sm="6" md="6">
+                                    <CCol xs="6" sm="6" md="6" style={{display: 'flex', justify: 'center', alignItems: 'center'}}>
                                         <CButton color="secondary" size="sm" block variant="outline" onClick={this.handleExpandToggle}>
                                             {
                                                 this.state.toggleExpandOption ? "Collapse All" : "Expand All"
@@ -166,7 +165,7 @@ export default class OptionPanel extends Component {
                                     <CCol xs="6" sm="6" md="6">
                                         <CLabel className="pull-left" size="sm">Remember State: </CLabel>
                                     </CCol>
-                                    <CCol xs="6" sm="6" md="6">
+                                    <CCol xs="6" sm="6" md="6" style={{display: 'flex', justify: 'center', alignItems: 'center'}}>
                                         <CButton color="secondary" size="sm" block variant="outline" onClick={this.SaveRemoveState}>{this.getStateBtnTxt()}</CButton>
                                     </CCol>
                                 </CRow>
@@ -174,7 +173,7 @@ export default class OptionPanel extends Component {
                                     <CCol xs="6" sm="6" md="6">
                                         <CLabel className="pull-left" size="sm">Export Json: </CLabel>
                                     </CCol>
-                                    <CCol xs="6" sm="6" md="6">
+                                    <CCol xs="6" sm="6" md="6" style={{display: 'flex', justify: 'center', alignItems: 'center'}}>
                                         <CButton color="secondary" size="sm" block variant="outline" onClick={this.props.handleExportJson}>Export</CButton>
                                     </CCol>
                                 </CRow>
