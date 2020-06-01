@@ -60,6 +60,8 @@ payload:  [
                 "icon": "user",
                 "editable": "true",
                 "id": "12",
+                "checkbox": true,
+                "class": "color-red",
                 "children": [
                     {
                         "expanded": "true",
